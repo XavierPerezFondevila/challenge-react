@@ -13,7 +13,7 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full bg-primary flex items-center justify-between py-4 px-12">
+    <header className="w-full bg-primary flex items-center justify-between py-4 px-4 md:px-12">
       <div className="relative w-32.5 h-13">
         <Link href="/" onClick={handleLogoClick}>
           <Image

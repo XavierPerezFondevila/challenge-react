@@ -12,12 +12,12 @@ interface CharacterCardProps {
 const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
 
   return (
-    <div className="flex flex-col items-center w-47.25 bg-primary group overflow-hidden">
-      <div className="relative w-full h-47.25">
+    <div className="flex flex-col items-center max-w-[189px] bg-primary group overflow-hidden">
+      <div className="relative w-full">
         <img
           src={character.image.small_url}
           alt={character.name}
-          className="object-cover object-top w-full h-full"
+          className="object-cover object-top aspect-square"
         />
         <div className="absolute bottom-0 left-0 w-full h-1.25 bg-secondary"></div>
       </div>

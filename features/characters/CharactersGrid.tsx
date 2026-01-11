@@ -8,7 +8,7 @@ import { useCharacters } from '@/context/CharactersContext';
 import { Character } from '@/services/types';
 
 export default function CharactersGrid() {
-  const { characters, setCharacters } = useCharacters();
+  const { characters, setCharacters, loading, setLoading } = useCharacters();
   const [error, setError] = useState<string | null>(null);
 
   const { favoriteCharacters, showOnlyFavorites, setShowOnlyFavoritesMode } = useFavoriteCharacters();
@@ -20,49 +20,57 @@ export default function CharactersGrid() {
     let isMounted = true;
 
     const fetchCharacters = async () => {
+      setLoading(true);
+      setCharacters([]);
+      setError(null);
+
       try {
-        setCharacters([]);
-        setError(null);
-        
         if (query) {
-          setShowOnlyFavoritesMode(false);  
+          setShowOnlyFavoritesMode(false);
         }
+
         const res = await fetch(`/api/characters?query=${encodeURIComponent(query)}`);
         if (!res.ok) throw new Error('Error al obtener personajes');
         const data: Character[] = await res.json();
+
         if (isMounted) {
           setCharacters(data);
         }
       } catch (err: any) {
         if (isMounted) {
           setError(err.message);
+          setCharacters([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
         }
       }
     };
 
     fetchCharacters();
 
-    return () => { isMounted = false };
-  }, [query, setShowOnlyFavoritesMode, setCharacters]);
+    return () => {
+      isMounted = false;
+    };
+  }, [query, setShowOnlyFavoritesMode, setCharacters, setLoading]);
 
-  const loading = !characters.length;
-
-  if (loading) return <div>Cargando personajes...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if ((!characters || characters.length === 0) && !showOnlyFavorites)
-    return <div>No hay personajes disponibles</div>;
-  if (showOnlyFavorites && favoriteCharacters.length === 0)
-    return <div>No tienes personajes favoritos</div>;
+  if (loading) {
+    return <div>Cargando personajes...</div>;
+  }
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   const displayedCharacters = showOnlyFavorites
     ? favoriteCharacters
-    : characters;
+    : characters || [];
 
   return (
-    <div className="w-full mt-8 grid grid-cols-7 gap-4">
-      {displayedCharacters.map((character) => (
-        <CharacterCard key={character.id} character={character} />
-      ))}
-    </div>
+    <div className="w-full mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4">
+        {displayedCharacters.map((character) => (
+          <CharacterCard key={character.id} character={character} />
+        ))}
+      </div>
   );
 }
