@@ -7,7 +7,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { useCharacters } from "../context/CharactersContext";
 
 export default function SearchBar() {
-  const { characters } = useCharacters();
+  const { characters, loading } = useCharacters();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -55,8 +55,9 @@ export default function SearchBar() {
           }}
         />
       </div>
+
       <div className="mt-3">
-        {characters.length} RESULTS
+        {!loading && `${characters?.length || 0} RESULTS`}
       </div>
     </div>
   );
