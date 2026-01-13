@@ -1,5 +1,5 @@
 import { getCharacterById, getCharacterIssues } from '@/services/api';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 type Params = {
   params: {
@@ -8,12 +8,12 @@ type Params = {
 };
 
 export async function GET(
-  _request: Request,
-  { params }: Params
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     
-    const { id } = await params;
+    const { id } = await context.params;
     
     const character = await getCharacterById(id);
     if (!character) {
