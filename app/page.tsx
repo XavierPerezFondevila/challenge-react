@@ -1,3 +1,5 @@
+"use client";
+
 import PageTitle from "@/components/PageTitle";
 import SearchBar from "@/components/SearchBar";
 import CharactersGrid from "@/features/characters/CharactersGrid";
