@@ -17,8 +17,8 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
       <div className="flex flex-col items-center max-w-[189px] bg-primary group overflow-hidden">
         <div className="relative w-full">
           <img
-            src={character.image.small_url}
-            alt={character.name}
+            src={character?.image?.small_url}
+            alt={character?.name}
             className="object-cover object-top aspect-square w-full"
           />
           <div className="absolute bottom-0 left-0 w-full h-1.25 bg-secondary"></div>
