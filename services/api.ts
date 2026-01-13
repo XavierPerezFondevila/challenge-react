@@ -1,4 +1,4 @@
-import { Character } from "./types";
+import { Character, Issue } from "./types";
 
 const API_KEY = process.env.COMIC_VINE_API_KEY!;
 const API_URL = process.env.COMIC_VINE_API_URL!;
@@ -17,11 +17,8 @@ export const getCharacters = async (query?: string): Promise<Character[]> => {
       searchParams.append('filter', `name:${query}`);
     }
 
-    console.log(searchParams.toString());
-    
-
     const res = await fetch(
-      `${API_URL}characters/?${searchParams.toString()}`,
+      `${API_URL}/characters/?${searchParams.toString()}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -53,4 +50,85 @@ export const getCharacters = async (query?: string): Promise<Character[]> => {
     return [];
   }
 };
+
+export const getCharacterById = async (characterId: string): Promise<Character | undefined> => {
+  const searchParams = new URLSearchParams({
+    api_key: API_KEY,
+    format: 'json'
+  });
+  
+  const res = await fetch(
+    `${API_URL}/character/4005-${characterId}?${searchParams.toString()}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(`Error en la petición: ${res.status} ${res.statusText}`);
+  }
+
+  const data = await res.json();
+  
+  if (!data.results) {
+    return undefined;
+  }
+    
+  const character = data.results;
+  return {
+    id: character?.id,
+    name: character?.name,
+    description: character?.deck,
+    image: {
+      small_url: character.image?.small_url || '',
+    },
+  };
+};
+
+export const getCharacterIssues = async (characterId: string): Promise<Issue[]> => {
+  const searchParams = new URLSearchParams({
+    api_key: API_KEY,
+    format: 'json',
+    filter: `character:4005-${characterId}`,
+    sort: 'cover_date:asc',
+    limit: '20',
+    offset: '20',
+  });
+
+
+  const res = await fetch(
+    `${API_URL}/issues?${searchParams.toString()}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(`Error en la petición: ${res.status} ${res.statusText}`);
+  }
+
+  const data = await res.json();
+
+  if (!data.results || !Array.isArray(data.results)) {
+    return [];
+  }
+
+  const issues = data.results.map((issue: any) => ({
+    id: issue?.id,
+    name: issue?.name,
+    coverDate: issue?.date_added ? new Date(issue.date_added).getFullYear() : null,
+    issueNumber: issue?.issue_number,
+    volumeName: issue?.volume?.name,
+    image: {
+      small_url: issue?.image?.small_url
+    },
+  }));
+
+  return issues;
+};
+
 

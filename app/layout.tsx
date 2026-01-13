@@ -3,6 +3,7 @@ import { roboto } from './fonts';
 import "./globals.css";
 import { FavoriteCharactersProvider } from "@/context/FavoriteCharactersContext";
 import Header from "@/components/Header";
+import { CharactersProvider } from "@/context/CharactersContext";
 
 export const metadata: Metadata = {
   title: "Challenge React",
@@ -13,10 +14,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${roboto.variable} antialiased font-main`}>
-        <FavoriteCharactersProvider>
-          <Header />
-          {children}
-        </FavoriteCharactersProvider>
+        <CharactersProvider>
+          <FavoriteCharactersProvider>
+            <Header />
+            {children}
+          </FavoriteCharactersProvider>
+        </CharactersProvider>
       </body>
     </html>
   );

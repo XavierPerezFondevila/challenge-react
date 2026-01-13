@@ -4,12 +4,23 @@ import Image from "next/image";
 import HeartIconFilled from "../icons/HeartIconFilled";
 import Link from "next/link";
 import { useFavoriteCharacters } from "@/context/FavoriteCharactersContext";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Header() {
   const { favoriteCharacters, setShowOnlyFavoritesMode } = useFavoriteCharacters();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogoClick = () => {
     setShowOnlyFavoritesMode(false);
+  };
+
+  const handleFavoriteButtonClick = () => {
+    setShowOnlyFavoritesMode(true);
+    if (pathname !== "/") {
+      router.push("/");
+    }
+
   };
 
   return (
@@ -25,7 +36,7 @@ export default function Header() {
         </Link>
       </div>
       <div>
-        <button className="text-white flex items-center gap-2 p-4 cursor-pointer" onClick={() => setShowOnlyFavoritesMode(true)}>
+        <button className="text-white flex items-center gap-2 p-4 cursor-pointer" onClick={handleFavoriteButtonClick}>
           <HeartIconFilled className="fill-secondary"/>
           <span>{favoriteCharacters.length}</span>
         </button>        

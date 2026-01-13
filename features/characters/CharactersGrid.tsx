@@ -8,10 +8,10 @@ import { useCharacters } from '@/context/CharactersContext';
 import { Character } from '@/services/types';
 
 export default function CharactersGrid() {
-  const { characters, setCharacters, loading, setLoading } = useCharacters();
+  const { characters, setCharacters, setLoading } = useCharacters();
   const [error, setError] = useState<string | null>(null);
 
-  const { favoriteCharacters, showOnlyFavorites, setShowOnlyFavoritesMode } = useFavoriteCharacters();
+  const { favoriteCharacters, showOnlyFavorites } = useFavoriteCharacters();
 
   const searchParams = useSearchParams();
   const query = searchParams.get('query') || '';
@@ -20,15 +20,15 @@ export default function CharactersGrid() {
     let isMounted = true;
 
     const fetchCharacters = async () => {
+      if(showOnlyFavorites) {
+        return;
+      }
+
       setLoading(true);
       setCharacters([]);
       setError(null);
 
       try {
-        if (query) {
-          setShowOnlyFavoritesMode(false);
-        }
-
         const res = await fetch(`/api/characters?query=${encodeURIComponent(query)}`);
         if (!res.ok) throw new Error('Error al obtener personajes');
         const data: Character[] = await res.json();
@@ -53,21 +53,20 @@ export default function CharactersGrid() {
     return () => {
       isMounted = false;
     };
-  }, [query, setShowOnlyFavoritesMode, setCharacters, setLoading]);
+  }, [query, setCharacters, setLoading, showOnlyFavorites]);
 
-  if (loading) {
-    return <div>Cargando personajes...</div>;
-  }
   if (error) {
     return <div>Error: {error}</div>;
   }
 
   const displayedCharacters = showOnlyFavorites
-    ? favoriteCharacters
+    ? favoriteCharacters.filter((char) =>
+      char.name.toLowerCase().includes(query.toLowerCase())
+    )
     : characters || [];
 
   return (
-    <div className="w-full mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4">
+    <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4">
         {displayedCharacters.map((character) => (
           <CharacterCard key={character.id} character={character} />
         ))}

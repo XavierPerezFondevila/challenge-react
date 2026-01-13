@@ -5,9 +5,12 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { useDebouncedCallback } from 'use-debounce';
 import { useCharacters } from "../context/CharactersContext";
+import { useFavoriteCharacters } from "@/context/FavoriteCharactersContext";
 
 export default function SearchBar() {
   const { characters, loading } = useCharacters();
+  const { favoriteCharacters, showOnlyFavorites } = useFavoriteCharacters();
+
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -38,6 +41,10 @@ export default function SearchBar() {
     return () => { isMounted = false };
   }, [searchParams]);
 
+  const resultsCount = showOnlyFavorites
+    ? favoriteCharacters.filter((char) => char.name.toLowerCase().includes(query.toLowerCase())).length
+    : characters?.length || 0;
+
   return (
     <div className="w-full py-3">
       <div className="relative border-b border-primary pb-2">
@@ -56,8 +63,8 @@ export default function SearchBar() {
         />
       </div>
 
-      <div className="mt-3">
-        {!loading && `${characters?.length || 0} RESULTS`}
+      <div className="mt-3 text-[12px]">
+        {!loading && `${resultsCount} RESULTS`}
       </div>
     </div>
   );

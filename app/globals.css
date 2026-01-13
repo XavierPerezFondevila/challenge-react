@@ -7,6 +7,16 @@
   --color-primary: #000000;
   --color-secondary: #EC1D24;
   --container-3xl: 1512px;
+  --text-3xl: 32px;
 }
 
-body {}
+body {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

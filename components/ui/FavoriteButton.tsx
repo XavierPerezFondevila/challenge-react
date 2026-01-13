@@ -16,7 +16,7 @@ export default function FavoriteButton({ character, width, height }: FavoriteBut
   const { isFavoriteCharacter, toggleFavorite } = useFavoriteCharacters(); 
 
   return (
-    <button className="cursor-pointer w-3 h-2.5 relative after:" onClick={() => toggleFavorite(character)} title={isFavoriteCharacter(character.id) ? "Remove from favorites" : "Add to favorites"}>
+    <button type="button" className="cursor-pointer w-3 h-2.5 relative after:" onClick={() => toggleFavorite(character)} title={isFavoriteCharacter(character.id) ? "Remove from favorites" : "Add to favorites"}>
       { isFavoriteCharacter(character.id) ? (
         <HeartIconFilled width={width} height={height} className="w-full h-full transition-colors duration-375  fill-secondary group-hover:fill-white" />
       ) : (
