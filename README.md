@@ -2,6 +2,9 @@
 Xavi Pérez
 <hr>
 
+### Deployment url
+[Challenge deployment url](https://challenge-react-jade.vercel.app/)
+
 ### Run project
 
   `npm run dev`
