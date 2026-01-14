@@ -10,7 +10,7 @@ export default function Home() {
         <Suspense>
           <div className="w-full mt-6 md:mt-12 flex flex-col gap-6">
             <PageTitle />
-            <SearchBar />
+            <SearchBar placeHolderText="Search a character..." />
           </div>
           <CharactersGrid />
         </Suspense>

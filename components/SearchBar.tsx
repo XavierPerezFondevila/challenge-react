@@ -7,7 +7,11 @@ import { useDebouncedCallback } from 'use-debounce';
 import { useCharacters } from "../context/CharactersContext";
 import { useFavoriteCharacters } from "@/context/FavoriteCharactersContext";
 
-export default function SearchBar() {
+interface SearchBarProps {
+  placeHolderText: string;
+}
+
+export default function SearchBar({placeHolderText}: SearchBarProps) {
   const { characters, loading } = useCharacters();
   const { favoriteCharacters, showOnlyFavorites } = useFavoriteCharacters();
 
@@ -53,7 +57,7 @@ export default function SearchBar() {
           name="search"
           id="search"
           type="text"
-          placeholder="Search a character..."
+          placeholder={placeHolderText}
           className="w-full focus:outline-none px-6 uppercase cursor-pointer placeholder:color-[#AAAAAA]"
           value={query}
           onChange={(ev) => {

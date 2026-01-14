@@ -3,6 +3,18 @@ import { Character, Issue } from "./types";
 const API_KEY = process.env.COMIC_VINE_API_KEY!;
 const API_URL = process.env.COMIC_VINE_API_URL!;
 
+export async function fetcher<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    const error = new Error("Error fetching data");
+    (error as any).status = res.status;
+    throw error;
+  }
+
+  return res.json();
+}
+
 export const getCharacters = async (query?: string): Promise<Character[]> => {
   try {
     const limit = 50;

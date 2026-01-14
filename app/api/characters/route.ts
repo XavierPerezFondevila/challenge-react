@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const characters = await getCharacters(queryString);
     return NextResponse.json(characters);
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Error desconocido';
+    const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -1,75 +1,53 @@
 'use client';
-
-import { useEffect, useState } from 'react';
+import useSWR from 'swr';
 import CharacterCard from './CharacterCard';
 import { useSearchParams } from 'next/navigation';
 import { useFavoriteCharacters } from '@/context/FavoriteCharactersContext';
 import { useCharacters } from '@/context/CharactersContext';
 import { Character } from '@/services/types';
+import { useEffect } from 'react';
+import { fetcher } from '@/services/api';
+import LoadingBar from '@/components/ui/LoadingBar';
 
 export default function CharactersGrid() {
-  const { characters, setCharacters, setLoading } = useCharacters();
-  const [error, setError] = useState<string | null>(null);
-
+  const { setCharacters, setLoading } = useCharacters();
   const { favoriteCharacters, showOnlyFavorites } = useFavoriteCharacters();
 
   const searchParams = useSearchParams();
   const query = searchParams.get('query') || '';
 
+  const { data: characters, error, isLoading } = useSWR<Character[]>(
+    showOnlyFavorites ? null : `/api/characters?query=${encodeURIComponent(query)}`,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      keepPreviousData: true,
+    }
+  );
+
   useEffect(() => {
-    let isMounted = true;
+    setLoading(isLoading);
+    if (characters) {
+      setTimeout(() => {
+        setCharacters(characters);
+      }, 400);
+    } 
+  }, [characters, isLoading, setCharacters, setLoading]);
 
-    const fetchCharacters = async () => {
-      if(showOnlyFavorites) {
-        return;
-      }
-
-      setLoading(true);
-      setCharacters([]);
-      setError(null);
-
-      try {
-        const res = await fetch(`/api/characters?query=${encodeURIComponent(query)}`);
-        if (!res.ok) throw new Error('Error al obtener personajes');
-        const data: Character[] = await res.json();
-
-        if (isMounted) {
-          setCharacters(data);
-        }
-      } catch (err: any) {
-        if (isMounted) {
-          setError(err.message);
-          setCharacters([]);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchCharacters();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [query, setCharacters, setLoading, showOnlyFavorites]);
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  if (error) return <div>Error: {(error as Error).message}</div>;
 
   const displayedCharacters = showOnlyFavorites
-    ? favoriteCharacters.filter((char) =>
-      char.name.toLowerCase().includes(query.toLowerCase())
-    )
+    ? favoriteCharacters.filter((char) =>char.name.toLowerCase().includes(query.toLowerCase()))
     : characters || [];
 
   return (
-    <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4">
+    <>
+      <LoadingBar loading={isLoading}/>
+      <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4">
         {displayedCharacters.map((character) => (
           <CharacterCard key={character.id} character={character} />
         ))}
       </div>
+    </>
   );
 }
